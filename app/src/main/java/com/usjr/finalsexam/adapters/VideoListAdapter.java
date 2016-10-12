@@ -19,9 +19,11 @@ public class VideoListAdapter extends BaseAdapter {
     private Context     mContext;
     private List<Video> mVideos;
 
+
     public VideoListAdapter(Context context, List<Video> videos) {
         mContext = context;
         mVideos = videos;
+
     }
 
     @Override
@@ -41,11 +43,13 @@ public class VideoListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         ViewHolder holder;
 
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item_video, parent, false);
             holder = new ViewHolder(convertView);
+            convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
@@ -54,6 +58,8 @@ public class VideoListAdapter extends BaseAdapter {
         if (video != null) {
             if (holder.imgThumbnail != null) {
                 Glide.with(mContext).load(video.thumbnailUrl).into(holder.imgThumbnail);
+                holder.tvTitle.setText(video.title);
+
             }
         }
 
@@ -74,6 +80,7 @@ public class VideoListAdapter extends BaseAdapter {
 
         public ViewHolder(View itemView) {
             tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
+            imgThumbnail = (ImageView) itemView.findViewById(R.id.imgThumbnail);
         }
     }
 }

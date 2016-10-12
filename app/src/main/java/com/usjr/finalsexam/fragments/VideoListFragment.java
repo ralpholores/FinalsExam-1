@@ -8,9 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.usjr.finalsexam.R;
 import com.usjr.finalsexam.adapters.VideoListAdapter;
 import com.usjr.finalsexam.entity.Video;
@@ -28,6 +32,7 @@ public class VideoListFragment extends Fragment implements AdapterView.OnItemCli
 
     private DatabaseReference mRootDb;
     private DatabaseReference mVideosDb;
+    ArrayList<Video> listVideo = new ArrayList<>();
 
     public VideoListFragment() {
         // Required empty public constructor
@@ -48,6 +53,23 @@ public class VideoListFragment extends Fragment implements AdapterView.OnItemCli
 
         mRootDb = FirebaseDatabase.getInstance().getReference();
         mVideosDb = mRootDb.child("videos");
+
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+                    Toast.makeText(getContext(),"Retrieved Data", Toast.LENGTH_SHORT).show();
+                    Video video = dataSnapshot1.getValue(Video.class);
+                    listVideo.add(video);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        mVideosDb.addValueEventListener(valueEventListener);
     }
 
     @Override
@@ -56,7 +78,7 @@ public class VideoListFragment extends Fragment implements AdapterView.OnItemCli
         View view = inflater.inflate(R.layout.fragment_video_list, container, false);
         ListView listView = (ListView) view.findViewById(R.id.listView);
 
-        mAdapter = new VideoListAdapter(getContext(), new ArrayList<Video>());
+        mAdapter = new VideoListAdapter(getContext(), listVideo);
         listView.setAdapter(mAdapter);
 
         return view;
